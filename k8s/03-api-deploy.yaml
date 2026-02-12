@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: burger-api
+  namespace: burger
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: burger-api
+  template:
+    metadata:
+      labels:
+        app: burger-api
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/pritpalnagra/burger-api:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+            - name: NODE_ENV
+              value: "production"
+            - name: MYSQL_HOST
+              valueFrom: { configMapKeyRef: { name: burger-config, key: MYSQL_HOST } }
+            - name: MYSQL_PORT
+              valueFrom: { configMapKeyRef: { name: burger-config, key: MYSQL_PORT } }
+            - name: MYSQL_DATABASE
+              valueFrom: { configMapKeyRef: { name: burger-config, key: MYSQL_DATABASE } }
+            - name: HST_RATE
+              valueFrom: { configMapKeyRef: { name: burger-config, key: HST_RATE } }
+            - name: MYSQL_USER
+              valueFrom: { secretKeyRef: { name: burger-secrets, key: MYSQL_USER } }
+            - name: MYSQL_PASSWORD
+              valueFrom: { secretKeyRef: { name: burger-secrets, key: MYSQL_PASSWORD } }
+            - name: SESSION_SECRET
+              valueFrom: { secretKeyRef: { name: burger-secrets, key: SESSION_SECRET } }
+          readinessProbe:
+            httpGet: { path: /api/health, port: 3000 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /api/health, port: 3000 }
+            initialDelaySeconds: 10
+            periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: burger-api
+  namespace: burger
+spec:
+  selector:
+    app: burger-api
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000

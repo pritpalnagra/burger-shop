@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: burger-web
+  namespace: burger
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: burger-web
+  template:
+    metadata:
+      labels:
+        app: burger-web
+    spec:
+      containers:
+        - name: web
+          image: ghcr.io/pritpalnagra/burger-web:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet: { path: / , port: 8080 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: burger-web
+  namespace: burger
+spec:
+  selector:
+    app: burger-web
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080

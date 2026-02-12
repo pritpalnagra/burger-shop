@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: burger-config
+  namespace: burger
+data:
+  MYSQL_HOST: "host.docker.internal"
+  MYSQL_PORT: "3306"
+  MYSQL_DATABASE: "burgerdb"
+  HST_RATE: "0.13"

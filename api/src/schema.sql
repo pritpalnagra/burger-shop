@@ -1,0 +1,19 @@
+CREATE TABLE IF NOT EXISTS orders (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  subtotal_cents INT NOT NULL,
+  hst_rate DECIMAL(5,4) NOT NULL,
+  hst_cents INT NOT NULL,
+  total_cents INT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS order_items (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  order_id BIGINT NOT NULL,
+  sku VARCHAR(50) NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  unit_price_cents INT NOT NULL,
+  qty INT NOT NULL,
+  line_total_cents INT NOT NULL,
+  FOREIGN KEY (order_id) REFERENCES orders(id)
+);
