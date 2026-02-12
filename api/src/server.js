@@ -8,6 +8,9 @@ const { z } = require("zod");
 const { pool, healthcheck } = require("./db");
 
 const MySQLStore = require("express-mysql-session")(session);
+console.log("server.js __dirname =", __dirname);
+console.log("resolved db path =", require.resolve("./db"));
+console.log("db module exports =", require("./db"));
 
 const PORT = Number(process.env.PORT || "3000");
 const NODE_ENV = process.env.NODE_ENV || "production";
